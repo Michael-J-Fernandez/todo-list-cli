@@ -1,23 +1,23 @@
 const prompt = require('prompt-sync')({ sigint: true });
 
 
-console.log("~ Select an action ~\n[1] Create a to-do item\n[2] Complete a to-do item\n[3] Exit To-Do List Application");
+console.log("\n~ Select an Action ~\n[1] Create a new to-do item\n[2] Change the status of a to-do item\n[3] Edit to-do item\n[4] Delete to-do item\n[5] Exit To-Do List Application\n");
 
 let option = Number(prompt("> "));
 let toDoList = [];
 let statusArray = [];
 
-while (option !== 3) {
+while (option !== 5) {
     
+//  ----- Add To-Do Item -----
     if (option === 1) {
         displayList();
-        console.log("Enter New To-Do Item: ");
+        console.log("\nEnter New To-Do Item: ");
         
-        // add To-Do Item
         let addItem = prompt("> ");
 
         while (addItem === "") {         // Makes sure string is not empty
-            console.log("Input cannot be empty.\nEnter New Item: ")
+            console.log("Input cannot be empty.\nEnter New To-Do Item: ")
             addItem = prompt("> ");      // reprompts the user to addItem
 
         }
@@ -27,56 +27,131 @@ while (option !== 3) {
         
         displayList();
         // reprompt the user
-        selectOption();
+        selectAction();
+
+
+//  ----- Gets into changing task status -----
+    } else if (option === 2) { 
         
-    } else if (option === 2) { // Gets into changing task status
+        if (toDoList.length !== 0) {
+            
+            displayList();
+            console.log("\nEnter item number to change its completion status:\n");
+
+            
+            let newStatus = Number(prompt("> "));
+            
+            // this reprompts if newStatus is not a whole number between 1 and toDoList.length
+            while (isNaN(newStatus) || newStatus > toDoList.length || newStatus < 1 || newStatus % 1 !== 0) {
+                console.log("Invalid - Please input an item number for your choice: ");
+                newStatus = Number(prompt("> "));
+            }
+
+            // Below tries to toggle item status
+            if (statusArray[newStatus - 1] === true) {
+                statusArray[newStatus - 1] = false;
+
+            } else if (statusArray[newStatus - 1] === false) {
+                statusArray[newStatus - 1] = true;
+            }
+
+            displayList();
+            selectAction();
+            
+        } else {
+            console.log("You need to have items here before you can change anything.");
+            
+            displayList()      // NEEDS WORK
+            selectAction();    // NEEDS WORK
+        }
+
+
+//  ----- Modify Existing To-Do Task -----
+    } else if (option === 3) {
+    
+        if (toDoList.length !== 0) {
+            
+            displayList();
+            console.log("\nEnter item number to edit its text:");
+
+            
+            let modifyItem = Number(prompt("> "));
+            
+            // this reprompts if newStatus is not a whole number between 1 and toDoList.length
+            while (isNaN(modifyItem) || modifyItem > toDoList.length || modifyItem < 1 || modifyItem % 1 !== 0) {
+                console.log("Invalid - Please input an item number for your choice: ");
+                modifyItem = Number(prompt("> "));
+            }
+
+            // Below targets item to modify and prompts for new text
+            toDoList[modifyItem - 1] = prompt("Enter new text for your item: ")
+
+            displayList();
+            selectAction();
+            
+        } else {
+            console.log("You need to have items here before you can change anything.");
+            
+            displayList()      // NEEDS WORK
+            selectAction();    // NEEDS WORK
+        }
+
+//  ----- Delete Existing To-Do Task -----     
+    } else if (option === 4) {
 
         if (toDoList.length !== 0) {
-            console.log("You have no items on this list.");
+            
+            displayList();
+            console.log("\nEnter item number to delete");
 
+            let deleteItem = Number(prompt("> "));
+            
+            // this reprompts if newStatus is not a whole number between 1 and toDoList.length
+            while (isNaN(deleteItem) || deleteItem > toDoList.length || deleteItem < 1 || deleteItem % 1 !== 0) {
+                console.log("Invalid - Please input an item number for your choice: ");
+                deleteItem = Number(prompt("> "));
+            }
+
+            // Below targets item to delete
+            toDoList.splice([deleteItem - 1], 1);
+            statusArray.splice([deleteItem - 1], 1);
+
+            displayList();
+            selectAction();
+            
+        } else {
+            console.log("You need to have items here before you can change anything.");
+            
             displayList()      // NEEDS WORK
-            selectOption();    // NEEDS WORK
-        }
-        
-        console.log("Enter To-Do Item to Complete\n");
-        displayList();
-        
-        let newStatus = Number(prompt("> "));
-
-        // this reprompts if newStatus is not a whole number between 1 and toDoList.length
-        while (isNaN(newStatus) || newStatus > toDoList.length || newStatus < 1 || newStatus % 1 !== 0) {
-            console.log("Invalid - Please input an item number for your choice: ");
-            newStatus = Number(prompt("> "));
+            selectAction();    // NEEDS WORK
         }
 
-        statusArray[newStatus - 1] = true;
-        
-        displayList();
-        selectOption();
-        
-
+//  ----- In case a wrong choice is selected -----
     } else {
-        // in case a wrong choice is selected
         console.log("Invalid Operation");
-        selectOption();
+        selectAction();
     } 
 }
 
-// Exiting Application
+// ----- Exiting Application -----
 console.log("\nExiting To-Do List Application\n")
 
 
 
 // ----- FUNCTIONS -----
 
-function selectOption() {
 
-    console.log("\n");
-    console.log("~ Select an action ~\n[1] Create a to-do item\n[2] Complete a to-do item\n[3] Exit To-Do List Application");
+// ----- Prompts user to select an action -----
+
+function selectAction() {
+
+    console.log("\n~ Select an Action ~\n[1] Create a new to-do item\n[2] Change the status of a to-do item\n[3] Edit to-do item\n[4] Delete to-do item\n[5] Exit To-Do List Application\n");
 
     option = Number(prompt("> ")); 
 }
 
+
+// ----- Displays To-Do List and status -----
 
 function displayList() {
 
@@ -84,20 +159,20 @@ function displayList() {
         console.log(`Your To-Do List is Empty`)
 
     } else {
-        console.log(`Your To-Do List has ${toDoList.length} item(s).`);
+        console.log(`\nYour To-Do List has ${toDoList.length} item(s).`);
     }
     
 
     for (i = 0; i < toDoList.length; i++){  // displays whether item is [Complete]
 
         if (statusArray[i] === false) {
-            statusArray[i] = "[Incomplete]";
+            itemStatus = "[Incomplete]";
 
         } else if (statusArray[i] === true) {
-            statusArray[i] = "[Complete]";
+            itemStatus = "[Complete]";
         }
     
-        console.log(`${i + 1}. ${statusArray[i]} ${toDoList[i]}`);
+        console.log(`${i + 1}. ${itemStatus} ${toDoList[i]}`);
     }
 }
 
@@ -105,6 +180,8 @@ function displayList() {
 // ----- END OF FUNCTIONS -----
 
 
+
+// ----- PROJECT NOTES -----
 
 /* ----- Figure out UI -----
 
